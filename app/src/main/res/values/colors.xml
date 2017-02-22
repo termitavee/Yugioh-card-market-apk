@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#b7885a</color>
+    <color name="colorPrimaryDark">#563121</color>
+    <color name="colorAccent">#1e88e5</color>
+
+    <color name="normal">#ffcc80</color>
+    <color name="effect">#f57f17</color>
+    <color name="fusion">#5e35b1</color>
+    <color name="ritual">#1a237e</color>
+    <color name="syncro">#bdbdbd</color>
+    <color name="xyz">#000000</color>
+    <color name="magic">#00c853</color>
+    <color name="trap">#d500f9</color>
+
+    <color name="textColorDefault">#2b3d4d</color>
+    <color name="textColorSoft">#b4bac0</color>
+</resources>
