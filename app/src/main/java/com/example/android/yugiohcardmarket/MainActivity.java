@@ -96,26 +96,11 @@ public class MainActivity extends AppCompatActivity
                 transaction.addToBackStack(null);
                 transaction.commit();
                 break;
-            /*case (R.id.nav_forbidden):
-                transaction.replace(R.id.lord_fragment, new ForbiddenFragment());
-                transaction.addToBackStack(null);
-                transaction.commit();
-                break;
-            case R.id.action_settings:
-            case (R.id.nav_options):
-                transaction.replace(R.id.lord_fragment, new OptionsFragment());
-                transaction.addToBackStack(null);
-                transaction.commit();
-                break;*/
             case (R.id.nav_web):
                 Uri uri = Uri.parse("https://es.yugiohcardmarket.eu/");
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 startActivity(intent);
 
-                break;
-            case R.id.action_helf:
-
-                startActivity(new Intent(this, HelfActivity.class));
                 break;
 
         }
