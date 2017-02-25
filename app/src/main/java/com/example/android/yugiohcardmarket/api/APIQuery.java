@@ -47,10 +47,12 @@ public class APIQuery extends AsyncTask<String, Void, JSONObject> {
     public void prepareUrl(String stringUrl) {
 
         String dfUrl = "https://www.mkmapi.eu/ws/v1.1/output.json";
-        if (mbuscar)
-            apiURL = dfUrl + "/products/" + stringUrl + "/3/4/false";
-        else
-            apiURL = dfUrl + "/product/" + stringUrl;
+        try {
+            if (mbuscar)
+                apiURL = dfUrl + "/products/" + rawurlencode(stringUrl) + "/3/4/false";
+            else
+                apiURL = dfUrl + "/product/" + rawurlencode(stringUrl);
+        }catch(Exception e){}
     }
 
     public String prepareAuth() {
