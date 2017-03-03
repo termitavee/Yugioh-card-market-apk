@@ -9,12 +9,12 @@ import org.json.JSONObject;
 
 public class Card {
 
-    int id;
-    String name;
-    String image;
-    String rarity;
-    String expansion;
-    double price;
+    private int id;
+    private String name;
+    private String image;
+    private String rarity;
+    private String expansion;
+    private double price;
 
     public Card() {
         id = -1;
@@ -35,8 +35,12 @@ public class Card {
     }
 
     public Card(JSONObject json)throws JSONException{
+        /*TODO coger
+            website
+            expIcon
 
-        int cid = json.getInt("idProduct");
+         */
+        id = json.getInt("idProduct");
 
         name = json.getJSONObject("name").getJSONObject("4").getString("productName");
 

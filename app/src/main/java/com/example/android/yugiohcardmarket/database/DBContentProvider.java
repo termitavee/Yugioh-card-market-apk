@@ -1,3 +1,4 @@
+
 package com.example.android.yugiohcardmarket.database;
 
 import android.content.ContentProvider;
@@ -18,36 +19,29 @@ public class DBContentProvider extends ContentProvider {
 
     // used for the UriMacher
     private static final int LISTS = 100;
-    private static final int FORBIDDEN_LIST = 101;
-    private static final int OWN_LIST = 102;
-    private static final int LIST_ID = 110;
-    private static final int CARD_ID = 111;
+    private static final int LIST = 110;
+    private static final int CARD = 111;
 
     private static final String AUTHORITY = "com.example.android.yugiohcardmarket";
 
     private static final String LIST_PATH = "list";
-    private static final String FORBIDDEN_PATH = "for";
-    private static final String OWN_PATH = "own";
     private static final String CARD_PATH = "card";
+    private static final String REL_PATH = "rel";
 
     private static final Uri LIST_URI = Uri.parse("content://" + AUTHORITY + "/" + LIST_PATH);
     private static final Uri CARD_URI = Uri.parse("content://" + AUTHORITY + "/" + CARD_PATH);
-    //TODO sURIMatcher.match(url); se comprueba la uri pasada con un switch
+
     private static final UriMatcher sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
     static {
         sURIMatcher.addURI(AUTHORITY, LIST_PATH, LISTS);
-        sURIMatcher.addURI(AUTHORITY, FORBIDDEN_PATH + "/#", FORBIDDEN_LIST);
-        sURIMatcher.addURI(AUTHORITY, OWN_PATH + "/#", OWN_LIST);
-        sURIMatcher.addURI(AUTHORITY, LIST_PATH + "/#", LIST_ID);
-        sURIMatcher.addURI(AUTHORITY, CARD_PATH + "/#", CARD_ID);
+        sURIMatcher.addURI(AUTHORITY, LIST_PATH + "/#", LIST);
+        sURIMatcher.addURI(AUTHORITY, CARD_PATH + "/#", CARD);
     }
 
     //TODO para el activity
     //el activity pasará esto y parametros
-    public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/lists";
-    public static final String CONTENT_LIST_FORBIDDEN = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/for";
-    public static final String CONTENT_LIST_OWN = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/own";
+    public static final String CONTENT_LISTS_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/lists";
     public static final String CONTENT_LIST_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/list";
     public static final String CONTENT_CARD_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/card";
 
@@ -68,33 +62,27 @@ public class DBContentProvider extends ContentProvider {
          * SELECT projection FROM todoTabla WHERE selection AND sortOrder;
          * sustituir selectionArgs
          */
-        // Uisng SQLiteQueryBuilder instead of query() method
+
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
-
-        // check if the caller has requested a column which does not exists
-        //checkColumns(projection);
-
-        // Set tables
-
-        //queryBuilder.setTables(TodoTable.TABLE_TODO);
 
         int uriType = sURIMatcher.match(uri);
         switch (uriType) {
             case LISTS:
                 //get all list
+                queryBuilder.setTables(ListEntry.TABLE_NAME);
                 break;
-            case FORBIDDEN_LIST:
-                // get forbidden list
+            case LIST:
+
+                queryBuilder.setTables(ListEntry.TABLE_NAME + "," + CardEntry.TABLE_NAME);
+                queryBuilder.appendWhere(ListEntry._ID + "=" + uri.getLastPathSegment());
+                queryBuilder.appendWhere(ListEntry._ID + "=" + RelationEntry.COLUMN_CARD_ID);
+                queryBuilder.appendWhere(CardEntry._ID + "=" + RelationEntry.COLUMN_CARD_ID);
                 break;
-            case OWN_LIST:
-                // get own list
-                break;
-            case LIST_ID:
-                // adding the ID to the original query
-                //queryBuilder.appendWhere(TodoTable.COLUMN_ID + "="
-                //       + uri.getLastPathSegment());
-                break;
-            case CARD_ID:
+            case CARD:
+                queryBuilder.setTables(CardEntry.TABLE_NAME);
+                queryBuilder.appendWhere(CardEntry._ID + "="
+                        + uri.getLastPathSegment());
+
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
@@ -107,7 +95,9 @@ public class DBContentProvider extends ContentProvider {
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
 
         return cursor;
-        //return null;
+    }
+    public void asdf(){
+
     }
 
     @Override
@@ -117,107 +107,81 @@ public class DBContentProvider extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-      /*  int uriType = sURIMatcher.match(uri);
+        /*url, params*/
+        int uriType = sURIMatcher.match(uri);
         SQLiteDatabase sqlDB = database.getWritableDatabase();
+        String path;
         long id = 0;
         switch (uriType) {
-            case LISTS:
-                id = sqlDB.insert(TodoTable.TABLE_TODO, null, values);
+            case LIST:
+                id = sqlDB.insert(ListEntry.TABLE_NAME, null, values);
+                path = LIST_PATH;
+                break;
+            case CARD:
+                id = sqlDB.insert(CardEntry.TABLE_NAME, null, values);
+
+                path = CARD_PATH;
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }
         getContext().getContentResolver().notifyChange(uri, null);
-        return Uri.parse(BASE_PATH + "/" + id);*/
-        return null;
+        return Uri.parse(path + "/" + id);
+
+        //return null;
     }
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-     /*   int uriType = sURIMatcher.match(uri);
+        /*url, select?, params*/
+        int uriType = sURIMatcher.match(uri);
         SQLiteDatabase sqlDB = database.getWritableDatabase();
-        int rowsDeleted = 0;
+        int rowsDeleted;
+        String[] id = {uri.getLastPathSegment()};
         switch (uriType) {
-            case LISTS:
-                rowsDeleted = sqlDB.delete(TodoTable.TABLE_TODO, selection,
-                        selectionArgs);
+            case CARD:
+                rowsDeleted = sqlDB.delete(CardEntry.TABLE_NAME, CardEntry._ID + "=?", id);
                 break;
-            case LIST_ID:
-                String id = uri.getLastPathSegment();
-                if (TextUtils.isEmpty(selection)) {
-                    rowsDeleted = sqlDB.delete(
-                            TodoTable.TABLE_TODO,
-                            TodoTable.COLUMN_ID + "=" + id,
-                            null);
-                } else {
-                    rowsDeleted = sqlDB.delete(
-                            TodoTable.TABLE_TODO,
-                            TodoTable.COLUMN_ID + "=" + id
-                                    + " and " + selection,
-                            selectionArgs);
-                }
+            case LIST:
+                rowsDeleted = sqlDB.delete(ListEntry.TABLE_NAME, ListEntry._ID + "=?", id);
+                sqlDB.delete(RelationEntry.TABLE_NAME, ListEntry._ID + "=?", id);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }
         getContext().getContentResolver().notifyChange(uri, null);
-        return rowsDeleted;*/
-        return 0;
+        return rowsDeleted;
+
     }
 
     @Override
-    public int update(Uri uri, ContentValues values, String selection,
-                      String[] selectionArgs) {
-/*
+    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+        /*url,value insert, where?, params*/
         int uriType = sURIMatcher.match(uri);
         SQLiteDatabase sqlDB = database.getWritableDatabase();
-        int rowsUpdated = 0;
+        int rowsUpdated;
+        String[] id = {uri.getLastPathSegment()};
         switch (uriType) {
-            case LISTS:
-                rowsUpdated = sqlDB.update(TodoTable.TABLE_TODO,
+            case CARD:
+                rowsUpdated = sqlDB.update(CardEntry.TABLE_NAME,
                         values,
-                        selection,
-                        selectionArgs);
+                        CardEntry._ID + "=?",
+                        id);
                 break;
-            case LIST_ID:
-                String id = uri.getLastPathSegment();
-                if (TextUtils.isEmpty(selection)) {
-                    rowsUpdated = sqlDB.update(TodoTable.TABLE_TODO,
-                            values,
-                            TodoTable.COLUMN_ID + "=" + id,
-                            null);
-                } else {
-                    rowsUpdated = sqlDB.update(TodoTable.TABLE_TODO,
-                            values,
-                            TodoTable.COLUMN_ID + "=" + id
-                                    + " and "
-                                    + selection,
-                            selectionArgs);
-                }
+            case LIST:
+                rowsUpdated = sqlDB.update(ListEntry.TABLE_NAME,
+                        values,
+                        ListEntry._ID + "=?",
+                        id);
+
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }
         getContext().getContentResolver().notifyChange(uri, null);
-        return rowsUpdated;*/
-        return 0;
+        return rowsUpdated;
+
     }
-/*
-    private void checkColumns(String[] projection) {
-        String[] available = { TodoTable.COLUMN_CATEGORY,
-                TodoTable.COLUMN_SUMMARY, TodoTable.COLUMN_DESCRIPTION,
-                TodoTable.COLUMN_ID };
-        if (projection != null) {
-            HashSet<String> requestedColumns = new HashSet<String>(
-                    Arrays.asList(projection));
-            HashSet<String> availableColumns = new HashSet<String>(
-                    Arrays.asList(available));
-            // check if all columns which are requested are available
-            if (!availableColumns.containsAll(requestedColumns)) {
-                throw new IllegalArgumentException(
-                        "Unknown columns in projection");
-            }
-        }
-    }*/
+
 
 }

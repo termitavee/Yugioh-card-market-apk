@@ -10,14 +10,6 @@
             android:id="@+id/nav_list"
             android:icon="@drawable/ic_menu_gallery"
             android:title="Listas" />
-        <!--<item
-            android:id="@+id/nav_forbidden"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="prohibiciones" />
-        <item
-            android:id="@+id/nav_options"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="opciones" />-->
         <item
             android:id="@+id/nav_web"
             android:icon="@drawable/ic_language"

@@ -8,7 +8,7 @@ import android.provider.BaseColumns;
 /**
  * Created by termitavee on 24/01/17.
  */
-//TODO crea la base de datos
+//TODO crea la base de datos MySQLiteHelper
 public class DBOpenHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "ygo.db";
     private static final int DATABASE_VERSION = 1;
@@ -21,12 +21,14 @@ public class DBOpenHelper extends SQLiteOpenHelper {
         ListEntry.onCreate(database);
         CardEntry.onCreate(database);
         RelationEntry.onCreate(database);
-        CardExtra.onCreate(database);
-        //TODO create forbidden content
+
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
+        ListEntry.onUpgrade(database,oldVersion,newVersion);
+        CardEntry.onUpgrade(database,oldVersion,newVersion);
+        RelationEntry.onUpgrade(database,oldVersion,newVersion);
 
     }
 
@@ -53,7 +55,6 @@ class ListEntry {
 
     static void onCreate(SQLiteDatabase database) {
         database.execSQL(SQL_CREATE_TABLE);
-        //TODO insert forbidden and own list
     }
 
     static void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
@@ -114,29 +115,6 @@ class RelationEntry {
             + _ID + " INTEGER PRIMARY KEY, "
             + COLUMN_CARD_ID + " TEXT NOT NULL, "
             + COLUMN_LIST_ID + " TEXT;";
-
-    static void onCreate(SQLiteDatabase database) {
-        database.execSQL(SQL_CREATE_TABLE);
-    }
-
-    static void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
-    }
-}
-
-class CardExtra {
-
-    static final String TABLE_NAME = "extra";
-
-    static final String _ID = BaseColumns._ID;
-
-    static final String COLUMN_CARD_ID = "card-id";
-    //0,1,2,3(was)
-    static final String COLUMN_CARD_FORBIDDEN = "forbidden";
-    private static final String SQL_CREATE_TABLE = "CREATE TABLE "
-            + TABLE_NAME + " ("
-            + _ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + COLUMN_CARD_ID + " INTEGER NOT NULL, "
-            + COLUMN_CARD_FORBIDDEN + " INTEGER NOT NULL;";
 
     static void onCreate(SQLiteDatabase database) {
         database.execSQL(SQL_CREATE_TABLE);

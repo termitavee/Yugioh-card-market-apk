@@ -24,8 +24,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.provider.AlarmClock.EXTRA_MESSAGE;
-import static com.example.android.yugiohcardmarket.api.APIQuery.BUSCAR;
+import static android.os.Build.ID;
 
 
 /**
@@ -69,19 +68,12 @@ public class SearchFragment extends Fragment {
         getView().findViewById(R.id.loading_indicator).setVisibility(View.GONE);
 
         mAdapter = new CardAdapter(getContext(), new ArrayList<Card>());
-
+        mEmptyStateTextView = (TextView) getView().findViewById(R.id.empty_view);
         cardsFound = new ArrayList<>();
 
         cardsListView = (ListView) getActivity().findViewById(R.id.search_list);
         cardsListView.setAdapter(mAdapter);
-        //earthquakeListView.setEmptyView(TextView);
-
-
-
-        mEmptyStateTextView = (TextView) getView().findViewById(R.id.empty_view);
-
         cardsListView.setEmptyView(mEmptyStateTextView);
-
 
 
         cardsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -92,8 +84,14 @@ public class SearchFragment extends Fragment {
 
                 // Create a new intent to view the earthquake URI
                 Intent cardDetails = new Intent(getActivity(), CardDetails.class);
-                cardDetails.putExtra(EXTRA_MESSAGE, "");
+                cardDetails.putExtra(ID, currentCard.getId());
+                cardDetails.putExtra("img", currentCard.getImage());
+                cardDetails.putExtra("name", currentCard.getName());
+                cardDetails.putExtra("rarity", currentCard.getRarity());
+                cardDetails.putExtra("expansion", currentCard.getExpansion());
+                cardDetails.putExtra("price", currentCard.getPrice());
 
+                Log.i("setOnItemClickListener","id="+currentCard.getId());
                 // Send the intent to launch a new activity
                 startActivity(cardDetails);
 
@@ -128,7 +126,7 @@ public class SearchFragment extends Fragment {
             Log.e("refreshList", e.getMessage());
         }
         mAdapter.addAll(cardsFound);
-        mAdapter.notifyDataSetChanged();
+        //mAdapter.notifyDataSetChanged();
         Log.i("refreshList","cardsFound.size()="+cardsFound.size());
         hideLoading();
 

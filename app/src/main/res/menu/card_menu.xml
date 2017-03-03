@@ -4,16 +4,11 @@
     <item
         android:id="@+id/action_add"
         android:orderInCategory="100"
-        android:title="Añadir a lista"
+        android:title="Añadir"
         app:showAsAction="never" />
-    <!--<item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />-->
     <item
-        android:id="@+id/action_helf"
+        android:id="@+id/action_del"
         android:orderInCategory="100"
-        android:title="Ayuda"
+        android:title="Borrar"
         app:showAsAction="never" />
 </menu>
