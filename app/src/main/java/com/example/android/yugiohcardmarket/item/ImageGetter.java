@@ -1,12 +1,10 @@
 package com.example.android.yugiohcardmarket.item;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.ImageView;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -16,29 +14,43 @@ import java.net.URL;
  * Created by termitavee on 02/03/17.
  */
 
-public class ImageGetter extends AsyncTask<String, Integer, Drawable> {
-    Context context;
-    public ImageGetter(Context context){
-        this.context = context;
+public class ImageGetter extends AsyncTask<String, Integer, Bitmap> {
+    ImageView parent = null;
+
+    public ImageGetter(ImageView parent) {
+        this.parent = parent;
     }
-    protected Drawable doInBackground(String... urls) {
+
+    protected Bitmap doInBackground(String... urls) {
         if (urls[0] == null)
             return null;
-        Drawable d;
+        Bitmap bm;
         try {
-            String url = "https://en.yugiohcardmarket.eu" + urls[0];
+            String url = "https://en.yugiohcardmarket.eu" + urls[0].replaceFirst(".", "");
             HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
             connection.setRequestProperty("User-agent", "Mozilla/4.0");
-
+            //Log.i("ImageGetter", "doInBackground url=" + url);
             connection.connect();
             InputStream input = connection.getInputStream();
 
-            Bitmap x = BitmapFactory.decodeStream(input);
-            Log.i("LoadImageFromWeb ", "Bitmap=" + x);
-            d = new BitmapDrawable(context.getResources(), x);
-        }catch(Exception e){
+            bm = BitmapFactory.decodeStream(input);
+
+
+        } catch (Exception e) {
+            Log.e("ImageGetter", "Exception e=" + e.getMessage());
             return null;
+
         }
-        return d;
+        return bm;
+    }
+
+    @Override
+    protected void onPostExecute(Bitmap b) {
+        super.onPostExecute(b);
+        //TODO comprobar
+        parent.setImageBitmap(null);
+        parent.setBackground(null);
+        //parent.setImageResource(android.R.color.transparent);
+        parent.setImageBitmap(b);
     }
 }

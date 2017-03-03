@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.android.yugiohcardmarket.R;
@@ -32,12 +33,14 @@ public class CardAdapter extends ArrayAdapter<Card> {
         Card currentCard = getItem(position);
 
         TextView idView = (TextView) listItemView.findViewById(R.id.cardID);
-        int id = currentCard.getId();
+        String id = String.valueOf(currentCard.getId());
         idView.setText(id);
+//TODO arreglar
+        ImageView imageView = (ImageView) listItemView.findViewById(R.id.image);
+        //String image = currentCard.getImage();
+        //new ImageGetter(imageView).execute(image);
 
-        TextView imageView = (TextView) listItemView.findViewById(R.id.image);
-        String image = currentCard.getImage();
-        Drawable drawable = Utilities.LoadImageFromWebOperations(image,getContext());
+        Drawable drawable = getContext().getResources().getDrawable(R.drawable.undefined_card);
         imageView.setBackground(drawable);
 
         TextView cardNameView = (TextView) listItemView.findViewById(R.id.card_name);

@@ -48,19 +48,19 @@ public class APIQuery extends AsyncTask<String, Void, JSONObject> {
 
         String dfUrl = "https://www.mkmapi.eu/ws/v1.1/output.json";
         try {
+            //TODO comprobar
             if (mbuscar)
                 apiURL = dfUrl + "/products/" + rawurlencode(stringUrl) + "/3/4/false";
             else
                 apiURL = dfUrl + "/product/" + rawurlencode(stringUrl);
-        }catch(Exception e){}
+        } catch (Exception e) {
+        }
     }
 
     public String prepareAuth() {
 
-        //TODO pasos
-        //TODO prepara datos
         try {
-
+            //prepara datos
             String realm = apiURL;
             String oauth_version = "1.0";
             String oauth_signature_method = APIData.signatureMethod;
@@ -70,7 +70,7 @@ public class APIQuery extends AsyncTask<String, Void, JSONObject> {
             String oauth_token = "";
 
 
-            //TODO crea param
+            //crea param
             String encodedRequestURL = rawurlencode(apiURL);
             String baseString = "GET&" + encodedRequestURL + "&";
 
@@ -115,7 +115,7 @@ public class APIQuery extends AsyncTask<String, Void, JSONObject> {
 
 
     public static JSONObject readFromStream(InputStream inputStream) throws IOException, JSONException {
-        Log.i("readFromStream", "start");
+
         StringBuilder output = new StringBuilder();
         if (inputStream != null) {
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream, Charset.forName("UTF-8"));
@@ -165,7 +165,6 @@ public class APIQuery extends AsyncTask<String, Void, JSONObject> {
             urlConnection.addRequestProperty("Authorization", authorizationProperty);
             urlConnection.setRequestMethod("GET");
 
-            Log.i("APIQuery", " Authorization: " + urlConnection.getRequestProperty("Authorization"));
 
             urlConnection.connect();
 
@@ -192,11 +191,11 @@ public class APIQuery extends AsyncTask<String, Void, JSONObject> {
     protected void onPostExecute(JSONObject data) {
         // Clear the adapter of previous earthquake data
         //mAdapter.clear();
-        if (data != null) {
-            Log.i("onPostExecute", "JSONObject" + data.toString());
+       /* if (data != null)
             mData = data;
-        } else
-            mData = null;
+        else
+            mData = null;*/
+        mData = (data != null) ? data : null;
         mParent.refreshList(mData);
     }
 

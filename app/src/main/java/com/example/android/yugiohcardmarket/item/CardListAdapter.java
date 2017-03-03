@@ -28,22 +28,22 @@ public class CardListAdapter extends ArrayAdapter<CardList> {
 
         if (listsView == null) {
             listsView = LayoutInflater.from(getContext()).inflate(
-                    R.layout.card_item, parent, false);
+                    R.layout.list_item, parent, false);
         }
 
         CardList currentList = getItem(position);
 
-        TextView listIdView = (TextView) listsView.findViewById(R.id.card_name);
+        TextView listIdView = (TextView) listsView.findViewById(R.id.listID);
         int id = currentList.getId();
-        listIdView.setText(id);
+        listIdView.setText(""+id);
 
-        TextView listNameView = (TextView) listsView.findViewById(R.id.card_name);
+        TextView listNameView = (TextView) listsView.findViewById(R.id.list_name);
         String name = currentList.getNombre();
         listNameView.setText(name);
 
-        TextView listCountView = (TextView) listsView.findViewById(R.id.card_name);
+        /*TextView listCountView = (TextView) listsView.findViewById(R.id.list_cards_count);
         int count = currentList.getSize();
-        listCountView.setText(count);
+        listCountView.setText(""+count);*/
 
 
         return listsView;

@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         mMenu = menu;
-        getMenuInflater().inflate(R.menu.main, menu);
+        //getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
@@ -109,45 +109,4 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-/*implements
-        LoaderManager.LoaderCallbacks<Cursor>
-    public static void getList(String id) {
-        //TODO get all cards name, id and type from a id list
-
-    }
-
-    public boolean setList(String id) {
-        //TODO create or override a list
-        try{
-            //TODO check if exist
-            ContentValues values = new ContentValues();
-            values.put(ListEntry.COLUMN_LIST_NAME, "Toto");
-            values.put(ListEntry.COLUMN_LIST_CONTENT, "Terrier");
-            getContentResolver().insert(ListEntry.CONTENT_URI, values);
-        }catch(Exception e){
-            return false;
-        }
-        return true;
-    }
-
-    public static void getAllLists() {
-        //TODO get all list id and name
-    }
-
-    public static void getCard() {
-
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        // Update {@link PetCursorAdapter} with this new cursor containing updated pet data
-        mCursorAdapter.swapCursor(data);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        // Callback called when the data needs to be deleted
-        mCursorAdapter.swapCursor(null);
-    }
-*/
 }

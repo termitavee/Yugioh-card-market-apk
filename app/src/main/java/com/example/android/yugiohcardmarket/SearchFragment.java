@@ -4,27 +4,27 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.yugiohcardmarket.api.APIQuery;
 import com.example.android.yugiohcardmarket.item.Card;
 import com.example.android.yugiohcardmarket.item.CardAdapter;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static android.os.Build.ID;
 
 
 /**
@@ -39,7 +39,7 @@ public class SearchFragment extends Fragment {
     private EditText searchField;
     private CardAdapter mAdapter;
     private TextView mEmptyStateTextView;
-    ListView cardsListView ;
+    ListView cardsListView;
     APIQuery asyncSearch;
 
     @Override
@@ -63,7 +63,7 @@ public class SearchFragment extends Fragment {
         });
         searchField = ((EditText) getView().findViewById(R.id.search_field));
 
-        loadingIndicator =  getView().findViewById(R.id.loading_indicator);
+        loadingIndicator = getView().findViewById(R.id.loading_indicator);
         hideLoading();
         getView().findViewById(R.id.loading_indicator).setVisibility(View.GONE);
 
@@ -71,8 +71,21 @@ public class SearchFragment extends Fragment {
         mEmptyStateTextView = (TextView) getView().findViewById(R.id.empty_view);
         cardsFound = new ArrayList<>();
 
+        searchField.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                if ((keyEvent.getAction() == KeyEvent.ACTION_DOWN) &&
+                        (i == KeyEvent.KEYCODE_ENTER)) {
+                    // Perform action on key press
+                    searchAction();
+                    return true;
+                }
+                return false;
+            }
+        });
         cardsListView = (ListView) getActivity().findViewById(R.id.search_list);
         cardsListView.setAdapter(mAdapter);
+
         cardsListView.setEmptyView(mEmptyStateTextView);
 
 
@@ -80,19 +93,21 @@ public class SearchFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 // Somehow Find the current earthquake that was clicked on
-                Card currentCard= cardsFound.get(position);
+                Card currentCard = cardsFound.get(position);
 
                 // Create a new intent to view the earthquake URI
                 Intent cardDetails = new Intent(getActivity(), CardDetails.class);
-                cardDetails.putExtra(ID, currentCard.getId());
+
+                cardDetails.putExtra("cardID", currentCard.getId());
                 cardDetails.putExtra("img", currentCard.getImage());
                 cardDetails.putExtra("name", currentCard.getName());
                 cardDetails.putExtra("rarity", currentCard.getRarity());
                 cardDetails.putExtra("expansion", currentCard.getExpansion());
                 cardDetails.putExtra("price", currentCard.getPrice());
 
-                Log.i("setOnItemClickListener","id="+currentCard.getId());
+                Log.i("setOnItemClickListener", "id=" + currentCard.getId());
                 // Send the intent to launch a new activity
+                mAdapter.clear();
                 startActivity(cardDetails);
 
             }
@@ -101,7 +116,7 @@ public class SearchFragment extends Fragment {
 
     public void refreshList(JSONObject mData) {
 
-        //TODO manejar datos y listarlos
+        //manejar datos y listarlos
         cardsFound.clear();
         mAdapter.clear();
         try {
@@ -109,7 +124,6 @@ public class SearchFragment extends Fragment {
             // Extract the JSONArray associated with the key called "features",
             // which represents a list of features (or earthquakes).
             JSONArray cardsArray = mData.getJSONArray("product");
-            Log.i("refreshList","cardsArray="+cardsArray);
             for (int i = 0; i < cardsArray.length(); i++) {
 
                 cardsFound.add(new Card(cardsArray.getJSONObject(i)));
@@ -117,17 +131,14 @@ public class SearchFragment extends Fragment {
             loadingIndicator.setVisibility(View.GONE);
 
 
-        }catch (JSONException e) {
-            Log.e("refreshList", "Problem parsing the JSON results");
-            Log.e("refreshList", e.getMessage());
-        }catch (Exception e) {
-            // TODO poner ventana de no se encuantra nada
-            Log.e("refreshList", "Problem");
-            Log.e("refreshList", e.getMessage());
+        } catch (Exception e) {
+
         }
         mAdapter.addAll(cardsFound);
-        //mAdapter.notifyDataSetChanged();
-        Log.i("refreshList","cardsFound.size()="+cardsFound.size());
+        mAdapter.notifyDataSetChanged();
+        if (mAdapter.isEmpty())
+            Toast.makeText(getActivity(), "No se ha encontrado nada", Toast.LENGTH_SHORT).show();
+        Log.i("refreshList", "cardsFound.size()=" + cardsFound.size());
         hideLoading();
 
 
@@ -135,24 +146,31 @@ public class SearchFragment extends Fragment {
 
 
     public void searchAction() {
-        //todo get text and search in the API
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         String text = searchField.getText().toString();
         Log.i("searchAction", "texto \"" + text + "\"");
-        asyncSearch = new APIQuery(this,asyncSearch.BUSCAR);
-        showLoading();
-        asyncSearch.execute(text);
-
+        if (!text.equals("")) {
+            asyncSearch = new APIQuery(this, asyncSearch.BUSCAR);
+            showLoading();
+            asyncSearch.execute(text);
+        }
 
     }
-    public void hideLoading(){
+
+    public void hideLoading() {
         //loadingIndicator.setVisibility(View.VISIBLE);
         getView().findViewById(R.id.loading_indicator).setVisibility(View.GONE);
     }
 
-    public void showLoading(){
+    public void showLoading() {
         //loadingIndicator.setVisibility(View.GONE);
         getView().findViewById(R.id.loading_indicator).setVisibility(View.VISIBLE);
     }
 
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (cardsFound.size() > 0)
+            mAdapter.addAll(cardsFound);
+    }
 }

@@ -1,4 +1,4 @@
-package com.example.android.yugiohcardmarket.item;
+package com.example.android.yugiohcardmarket;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -16,8 +16,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.android.yugiohcardmarket.R;
 import com.example.android.yugiohcardmarket.database.DBQuery;
+import com.example.android.yugiohcardmarket.item.Card;
+import com.example.android.yugiohcardmarket.item.CardList;
+import com.example.android.yugiohcardmarket.item.CardListAdapter;
+import com.example.android.yugiohcardmarket.item.ImageGetter;
 
 import java.util.ArrayList;
 
@@ -38,7 +41,7 @@ public class CardDetails extends AppCompatActivity {
     DBQuery database;
     ListView popUpListView;
     int[] selectedItems;
-    boolean hasMenu;
+    boolean cardFromList;
     private Menu mMenu;
     ImageView imageView;
 
@@ -59,11 +62,11 @@ public class CardDetails extends AppCompatActivity {
         try {
             String a = (String) info.get("menu");
             if (a.equals("true"))
-                hasMenu = true;
+                cardFromList = true;
             else
-                hasMenu = false;
+                cardFromList = false;
         } catch (Exception e) {
-            hasMenu = false;
+            cardFromList = false;
         }
 
         Log.i("CardDetails", "creating id=" + id);
@@ -91,21 +94,25 @@ public class CardDetails extends AppCompatActivity {
         database = new DBQuery(getBaseContext(), this);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        if (hasMenu) {
-            //TODO change icon  to ic_remove and add listener
+        if (cardFromList) {
+            //TODO change icon to ic_remove and add listener
 
             //setBackground(Drawable);
-            fab.hide();
+            fab.setImageResource(R.drawable.ic_remove);
+
+            //fab.setBackground(getResources().getDrawable(R.drawable.ic_remove,null));
+            //fab.hide();
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
 
-                    //ask confirmation
-
-                    //delete from relation
+                    View popup = LayoutInflater.from(getBaseContext()).inflate(R.layout.remove_card_popup, null);
+                    launchPopup(popup);
                 }
             });
         } else {
+            //fab.setBackground(ResourcesCompat.getDrawable(getResources(),R.drawable.ic_add,null));
+            fab.setImageResource(R.drawable.ic_add);
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -118,7 +125,6 @@ public class CardDetails extends AppCompatActivity {
 
                     View popup = LayoutInflater.from(getBaseContext()).inflate(R.layout.add_card_popup, null);
 
-                    //TODO a popup poner List<CardList> lists en TextView lists
                     popUpListView = ((ListView) popup.findViewById(R.id.existing_lists));
                     popUpListView.setAdapter(mListAdapter);
                     popUpListView.setChoiceMode(CHOICE_MODE_MULTIPLE);
@@ -160,7 +166,7 @@ public class CardDetails extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         mMenu = menu;
-        if (hasMenu)
+        if (cardFromList)
             getMenuInflater().inflate(R.menu.card_menu, menu);
         return true;
     }
@@ -187,38 +193,62 @@ public class CardDetails extends AppCompatActivity {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(CardDetails.this);
         alertDialogBuilder.setView(popup);
 
+        if (cardFromList) {
+            alertDialogBuilder
+                    .setCancelable(false)
+                    .setPositiveButton("Eliminar", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
 
-        alertDialogBuilder
-                .setCancelable(false)
-                .setPositiveButton("Añadir", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
+                            database.open();
 
-                        //Crear objeto card para meterlo en la base de datos
-                        Card card = new Card(CardId, name, image, rarity, expansion, price);
+                            if (database.deleteCard(CardId) == 0)
+                                Toast.makeText(getApplicationContext(), "Ha ocurrido un error", Toast.LENGTH_SHORT).show();
+                            else
+                                Toast.makeText(getApplicationContext(), "Carta eliminada :(", Toast.LENGTH_SHORT).show();
 
-                        database.open();
 
-                        for (int i = 0; i < selectedItems.length; i++) {
-                            //TODO get id from item
-                            if (selectedItems[i] != 0)
-                                if (database.insertCard(card, selectedItems[i]))
-                                    Toast.makeText(getApplicationContext(), "Carta añadida", Toast.LENGTH_SHORT).show();
-                                else
-                                    Toast.makeText(getApplicationContext(), "No se ha podido añadir", Toast.LENGTH_SHORT).show();
+                            database.close();
 
                         }
+                    })
+                    .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+        } else {
+            alertDialogBuilder
+                    .setCancelable(false)
+                    .setPositiveButton("Añadir", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
 
-                        database.close();
+                            //Crear objeto card para meterlo en la base de datos
+                            Card card = new Card(CardId, name, image, rarity, expansion, price);
 
-                    }
-                })
-                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
+                            database.open();
 
+                            for (int i = 0; i < selectedItems.length; i++) {
+                                if (selectedItems[i] != 0)
+                                    if (database.insertCard(card, selectedItems[i]))
+                                        Toast.makeText(getApplicationContext(), "Carta añadida", Toast.LENGTH_SHORT).show();
+                                    else
+                                        Toast.makeText(getApplicationContext(), "No se ha podido añadir", Toast.LENGTH_SHORT).show();
+
+                            }
+
+                            database.close();
+
+                        }
+                    })
+                    .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+        }
         alertDialogBuilder.create().show();
     }
+
+
 
 }

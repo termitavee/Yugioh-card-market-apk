@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
+import android.util.Log;
 
 /**
  * Created by termitavee on 24/01/17.
@@ -18,22 +19,21 @@ public class DBOpenHelper extends SQLiteOpenHelper {
     }
 
     public void onCreate(SQLiteDatabase database) {
+        Log.i("DBOpenHelper", "onCreate database");
         ListEntry.onCreate(database);
+        Log.i("DBOpenHelper", "ListEntry created");
         CardEntry.onCreate(database);
+        Log.i("DBOpenHelper", "CardEntry created");
         RelationEntry.onCreate(database);
-
+        Log.i("DBOpenHelper", "RelationEntry created");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
-        ListEntry.onUpgrade(database,oldVersion,newVersion);
-        CardEntry.onUpgrade(database,oldVersion,newVersion);
-        RelationEntry.onUpgrade(database,oldVersion,newVersion);
+        ListEntry.onUpgrade(database, oldVersion, newVersion);
+        CardEntry.onUpgrade(database, oldVersion, newVersion);
+        RelationEntry.onUpgrade(database, oldVersion, newVersion);
 
-    }
-
-    public void tableInfo(){
-        //return tables info?
     }
 
 }
@@ -46,15 +46,22 @@ class ListEntry {
     static final String _ID = BaseColumns._ID;
 
     static final String COLUMN_LIST_NAME = "name";
+    static final String COLUMN_LIST_NUMBER = "quantity";
 
 
     private static final String SQL_CREATE_TABLE = "CREATE TABLE "
             + TABLE_NAME + " ("
             + _ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + COLUMN_LIST_NAME + " TEXT NOT NULL;";
+            + COLUMN_LIST_NAME + " TEXT NOT NULL, "
+            + COLUMN_LIST_NUMBER + " INTEGER NOT NULL DEFAULT 0);";
+
+    static private String SQL_DEFAULT_TABLE = "INSERT INTO"
+            + TABLE_NAME + "(" + COLUMN_LIST_NAME + ", " + COLUMN_LIST_NAME + ")"
+            +" VALUES(default,0);";
 
     static void onCreate(SQLiteDatabase database) {
         database.execSQL(SQL_CREATE_TABLE);
+        database.execSQL(SQL_DEFAULT_TABLE);
     }
 
     static void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
@@ -66,6 +73,7 @@ class CardEntry {
     static final String TABLE_NAME = "card";
 
     static final String _ID = "id";
+    static final String COLUMN_CARD_ID = "cardID";
 
     static final String COLUMN_CARD_NAME = "name";
 
@@ -77,17 +85,16 @@ class CardEntry {
 
     static final String COLUMN_CARD_PRICE_TREND = "price";
 
-    static final String  COLUMN_CARD_FAV = "fav";
 
     static private String SQL_CREATE_TABLE = "CREATE TABLE "
             + TABLE_NAME + " ("
             + _ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + COLUMN_CARD_ID + " INTEGER, "
             + COLUMN_CARD_NAME + " TEXT NOT NULL, "
             + COLUMN_CARD_IMAGE_URL + " TEXT NOT NULL, "
             + COLUMN_CARD_RARITY + " TEXT NOT NULL, "
             + COLUMN_CARD_EXPANSION + " TEXT NOT NULL, "
-            + COLUMN_CARD_PRICE_TREND + " TEXT,"
-            + COLUMN_CARD_FAV + " INTEGER NOT NULL;";
+            + COLUMN_CARD_PRICE_TREND + " TEXT);";
 
 
     static void onCreate(SQLiteDatabase database) {
@@ -108,13 +115,11 @@ class RelationEntry {
 
     static final String COLUMN_LIST_ID = "list_id";
 
-    static final String COLUMN_LIST_CONTENT = "content";
-
     static private String SQL_CREATE_TABLE = "CREATE TABLE "
             + TABLE_NAME + " ("
-            + _ID + " INTEGER PRIMARY KEY, "
+            + _ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + COLUMN_CARD_ID + " TEXT NOT NULL, "
-            + COLUMN_LIST_ID + " TEXT;";
+            + COLUMN_LIST_ID + " TEXT NOT NULL);";
 
     static void onCreate(SQLiteDatabase database) {
         database.execSQL(SQL_CREATE_TABLE);

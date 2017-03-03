@@ -17,7 +17,6 @@ import android.widget.ListView;
 import com.example.android.yugiohcardmarket.database.DBQuery;
 import com.example.android.yugiohcardmarket.item.Card;
 import com.example.android.yugiohcardmarket.item.CardAdapter;
-import com.example.android.yugiohcardmarket.item.CardDetails;
 
 import java.util.ArrayList;
 
@@ -25,7 +24,7 @@ import java.util.ArrayList;
  * Created by termitavee on 21/01/17.
  */
 
-public class ListContentActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+public class ListContentActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     int listID;
     private CardAdapter madapter;
     private DBQuery database;
@@ -35,9 +34,9 @@ public class ListContentActivity extends AppCompatActivity implements Navigation
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        Log.i("ListContentActivity", "onCreate");
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.list_content);
+        setContentView(R.layout.activity_list_content);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -50,34 +49,30 @@ public class ListContentActivity extends AppCompatActivity implements Navigation
 
         madapter = new CardAdapter(ListContentActivity.this, lists);
         mlistView = (ListView) findViewById(R.id.list_content);
-        if (lists != null) {
-            mlistView.setAdapter(madapter);
-            mlistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                     @Override
-                     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                         Card item = madapter.getItem(position);
+        mlistView.setAdapter(madapter);
+
+        mlistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+             @Override
+             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                 Card item = madapter.getItem(position);
 
 
+                 Intent cardDetails = new Intent(ListContentActivity.this, CardDetails.class);
 
-                         Intent cardDetails = new Intent(getParent(), CardDetails.class);
+                 cardDetails.putExtra("cardID", item.getId());
+                 cardDetails.putExtra("img", item.getImage());
+                 cardDetails.putExtra("name", item.getName());
+                 cardDetails.putExtra("rarity", item.getRarity());
+                 cardDetails.putExtra("expansion", item.getExpansion());
+                 cardDetails.putExtra("price", item.getPrice());
+                 cardDetails.putExtra("menu", "true");
 
-                         cardDetails.putExtra("cardID", item.getId());
-                         cardDetails.putExtra("img", item.getImage());
-                         cardDetails.putExtra("name", item.getName());
-                         cardDetails.putExtra("rarity", item.getRarity());
-                         cardDetails.putExtra("expansion", item.getExpansion());
-                         cardDetails.putExtra("price", item.getPrice());
-                         cardDetails.putExtra("menu", "true");
+                 Log.i("setOnItemClickListener", "id=" + item.getId());
+                 // Send the intent to launch a new activity
+                 startActivity(cardDetails);
 
-                         Log.i("setOnItemClickListener", "id=" + item.getId());
-                         // Send the intent to launch a new activity
-                         startActivity(cardDetails);
-
-                     }
-                 }
-            );
-        }
-
+             }
+        });
     }
 
     @Override
@@ -100,7 +95,7 @@ public class ListContentActivity extends AppCompatActivity implements Navigation
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         //switch
-        if(item.getItemId()==R.id.action_del) {
+        if (item.getItemId() == R.id.action_del) {
             new DBQuery(getBaseContext(), this).deleteList(listID);
 
             finish();

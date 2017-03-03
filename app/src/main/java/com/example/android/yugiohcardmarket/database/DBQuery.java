@@ -1,35 +1,38 @@
 package com.example.android.yugiohcardmarket.database;
 
 import android.app.Activity;
-import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
+import android.os.AsyncTask;
+import android.util.Log;
 
 import com.example.android.yugiohcardmarket.item.Card;
 import com.example.android.yugiohcardmarket.item.CardList;
 
 import java.util.ArrayList;
-import java.util.List;
-
 
 /**
  * Created by termitavee on 15/01/17.
- * http://www.vogella.com/tutorials/AndroidSQLite/article.html
- * https://developer.android.com/reference/android/database/sqlite/SQLiteDatabase.html
  */
 //TODO usar el content provider para meter y sacar los datos necesarios CommentsDataSource
-public class DBQuery {
+public class DBQuery extends AsyncTask<String, Void, Boolean> {
     private DBOpenHelper DbHelper;
-    private SQLiteDatabase database;
-    private ContentResolver contentResolver;
-    //private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+    SQLiteDatabase database;
+    Activity parent;
+    Context context;
+    ContentValues values = new ContentValues();
+    private final String INSERT = "1";
+    private final String DELETE = "2";
+    static boolean success;
+    //TODO variables para que las lea asyntask
 
     public DBQuery(Context context, Activity activity) {
         DbHelper = new DBOpenHelper(context);
-        contentResolver = activity.getContentResolver();
+        this.context = context;
+        parent = activity;
     }
 
 
@@ -42,88 +45,197 @@ public class DBQuery {
             DbHelper.close();
     }
 
-    public void insertCard(String arg) {
-        //TODO insert a card in a list
-        //TODO if exist ommit cart insertion butt add to the relation
+    public boolean insertCard(Card mcard, int midList) {
+        final Card card = mcard;
+        final int idlist = midList;
+        Log.i("insertCard", "insertCard ");
+        success = false;
+
+        open();
+
+        values.clear();
+        values.put(RelationEntry.COLUMN_CARD_ID, card.getId());
+        values.put(RelationEntry.COLUMN_LIST_ID, idlist);
+
+        database.insert(RelationEntry.TABLE_NAME, null, values);
+        //if previous fails, this one is unnecesary
+        values.clear();
+        values.put(CardEntry.COLUMN_CARD_ID, card.getId());
+        values.put(CardEntry.COLUMN_CARD_NAME, card.getName());
+        values.put(CardEntry.COLUMN_CARD_IMAGE_URL, card.getImage());
+        values.put(CardEntry.COLUMN_CARD_RARITY, card.getRarity());
+        values.put(CardEntry.COLUMN_CARD_EXPANSION, card.getExpansion());
+        values.put(CardEntry.COLUMN_CARD_PRICE_TREND, card.getPrice());
+
+        database.insert(CardEntry.TABLE_NAME, null, values);
+
+        //insert relation in relation LOL
+
+
+        success = true;
+        Log.i("insertCard", "relation insertion success apparently ");
+
+
+        return success;
+    }
+
+    //NO TOCAR
+    public CardList createList(String name) {
+        Log.i("DBQuery", "createList ");
+        open();
+
+        ContentValues values = new ContentValues();
+        values.put(ListEntry.COLUMN_LIST_NAME, name);
+        Log.i("createList", "values to insert: " + values);
+        long ins = database.insert(ListEntry.TABLE_NAME, ListEntry.COLUMN_LIST_NAME, values);
+        Log.i("createList", "rows inserted: " + ins);
+        String[] column = {ListEntry._ID};
+        String[] param = {ListEntry.COLUMN_LIST_NAME};
+        Cursor cursor = database.query(ListEntry.TABLE_NAME, column, "_ID=?", param, null, null, ListEntry._ID, "1");
+
+        int id = cursor.moveToFirst() ? cursor.getInt(1) : 0;
+        close();
+
+        CardList list = new CardList(name, id, 0);
+
+        return list;
 
     }
 
-    public void createList(String arg) {
-        //TODO create a empty list
+    public int deleteList(int id) {
+        Log.i("DBQuery", "deleteList ");
+        open();
 
+        String[] param = {id + ""};
+        //delete a list
+        int i = database.delete(ListEntry.TABLE_NAME, ListEntry._ID + "=?", param);
+        //delete from relation
+        database.delete(RelationEntry.TABLE_NAME, RelationEntry.COLUMN_LIST_ID + "=?", param);
+        //TODO delete cards with no list
+        //delete outer join
+
+        close();
+
+
+        return i;
     }
 
-    public void deleteList(String arg) {
-        //TODO delete a list
-
-        //TODO delete from relation
-
-        //TODO check all cards in the list
-    }
-
-    public void deleteCard(String arg) {
+    public int deleteCard(int id) {
+        open();
+        String[] param = {id + ""};
         //TODO delete card from a list
 
+        //int i = database.delete(CardEntry.TABLE_NAME, CardEntry._ID + "=?", param);
         //TODO delete it from relation
+        int i = database.delete(RelationEntry.TABLE_NAME, RelationEntry.COLUMN_CARD_ID + "=?", param);
 
-        //TODO check if that card exist in any relation, if not, delete from table list
-
-
+        return i;
     }
 
-    //TODO getters api
-    /*
-     * (Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder)
-     * projection  list of columns to return
-     * selection where clause without 'where'
-     * selectionArgs wheres
-     * sortOrder  How to order SQL ORDER BY clause
-     *
-     * SELECT projection FROM todoTabla WHERE selection AND sortOrder;
-     * sustituir selectionArgs
-     */
+    public ArrayList<CardList> getAllLists() {
+        //TODO modify, count dards in each list
+        Log.i("DBQuery", "getAllLists ");
+        open();
 
-    public ArrayList<CardList> getLists() {
 
-        Uri uri = Uri.parse(DBContentProvider.CONTENT_LISTS_TYPE);
-        Cursor cursor = contentResolver.query(uri,null,null,null,null);
+        Cursor cursor = database.query(ListEntry.TABLE_NAME, null, null, null, null, null, null);
         ArrayList<CardList> lists = new ArrayList<>();
         if (cursor != null) {
             cursor.moveToFirst();
             int id;
             String name;
+            int q;
             while (!cursor.isAfterLast()) {
 
-                //TODO get data from cursor and manage it
                 id = Integer.parseInt(cursor.getString(cursor.getColumnIndex(ListEntry._ID)));
                 name = cursor.getString(cursor.getColumnIndex(ListEntry.COLUMN_LIST_NAME));
+                q = cursor.getInt(cursor.getColumnIndex(ListEntry.COLUMN_LIST_NUMBER));
 
 
-                lists.add(new CardList(name,id));
+                lists.add(new CardList(name, id, q));
                 cursor.moveToNext();
             }
         }
 
-
+        close();
         return lists;
     }
 
+    public ArrayList<Card> getAllCards(int listID) {
 
-    public List<Card> getAllCards(int listID) {
-        String[] columnas = {"String[]", ""};
-        //TODO get all cards of a list
-        Cursor cursor = database.query("tabla", columnas, "Condicion", null, null, null, null);
+        Log.i("DBQuery", "getAllCards ");
+        open();
+        String[] param = {"" + listID};
+        ArrayList<Card> lists = new ArrayList<>();
+        try {
+            String query = "SELECT DISTINCT " +
+                    CardEntry.TABLE_NAME + "." + CardEntry.COLUMN_CARD_ID + ", " +
+                    CardEntry.TABLE_NAME + "." + CardEntry.COLUMN_CARD_NAME + ", " +
+                    CardEntry.TABLE_NAME + "." + CardEntry.COLUMN_CARD_IMAGE_URL + ", " +
+                    CardEntry.TABLE_NAME + "." + CardEntry.COLUMN_CARD_RARITY + ", " +
+                    CardEntry.TABLE_NAME + "." + CardEntry.COLUMN_CARD_EXPANSION + ", " +
+                    CardEntry.TABLE_NAME + "." + CardEntry.COLUMN_CARD_PRICE_TREND +
+                    " FROM " + CardEntry.TABLE_NAME +
+                    " INNER JOIN " + RelationEntry.TABLE_NAME + " ON " + CardEntry.TABLE_NAME + "." + CardEntry.COLUMN_CARD_ID + " = " + RelationEntry.TABLE_NAME + "." + RelationEntry.COLUMN_CARD_ID +
+                    " INNER JOIN " + ListEntry.TABLE_NAME + " ON " + ListEntry.TABLE_NAME + "." + ListEntry._ID + " = " + RelationEntry.TABLE_NAME + "." + RelationEntry.COLUMN_LIST_ID +
+                    " WHERE " + ListEntry.TABLE_NAME + "." + ListEntry._ID + " ='" + listID + "' ;";
+            //Log.d(TAG, "DB: query = \n" + query.replace(", ",",\n  "));
+            Cursor cursor = database.rawQuery(query, null);
 
-        while (!cursor.isAfterLast()) {
+            if (cursor != null) {
+                cursor.moveToFirst();
+                Log.i("getAllCards", "cursor.getCount" + cursor.getCount());
+                int id;
+                String name;
+                String image;
+                String rarity;
+                String expansion;
+                double price;
+                for (int i = 0; i < cursor.getCount(); i++) {
 
-            //TODO get data from cursor and manage it
-            //Comment comment = cursorToComment(cursor);
-            // comments.add(comment);
-            cursor.moveToNext();
+                    //get data from cursor and manage it
+                    id = Integer.parseInt(cursor.getString(cursor.getColumnIndex(CardEntry.COLUMN_CARD_ID)));
+                    name = cursor.getString(cursor.getColumnIndex(CardEntry.COLUMN_CARD_NAME));
+                    image = cursor.getString(cursor.getColumnIndex(CardEntry.COLUMN_CARD_IMAGE_URL));
+                    rarity = cursor.getString(cursor.getColumnIndex(CardEntry.COLUMN_CARD_RARITY));
+                    expansion = cursor.getString(cursor.getColumnIndex(CardEntry.COLUMN_CARD_EXPANSION));
+                    price = cursor.getDouble(cursor.getColumnIndex(CardEntry.COLUMN_CARD_PRICE_TREND));
+
+                    lists.add(new Card(id, name, image, rarity, expansion, price));
+                    cursor.moveToNext();
+                }
+            }
+
+
+            return lists;
+        } catch (Exception e) {
+            Log.e("DBQuery.getAllCards", "error gettimg all cards for id=" + listID);
+        } finally {
+            close();
+        }
+        return lists;
+    }
+
+    protected Boolean doInBackground(String... action) {
+        try {
+            switch (action[0]) {
+                case INSERT:
+                    long a = database.insert(CardEntry.TABLE_NAME, null, values);
+
+                    Log.i("doInBackground", "inserted " + a);
+                    break;
+                case DELETE:
+
+                    break;
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-
-        return null;
+        return false;
     }
 
 }
+
+

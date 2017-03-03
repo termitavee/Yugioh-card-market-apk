@@ -5,7 +5,7 @@
     android:layout_height="64dip"
     android:orientation="horizontal"
     android:paddingEnd="16dp"
-    android:paddingLeft="16dp"
+
     android:paddingRight="16dp"
     android:paddingStart="16dp">
 
@@ -14,7 +14,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"/>
 
-    <TextView
+    <ImageView
         android:id="@+id/image"
         android:layout_width="28dp"
         android:layout_height="35dp"
