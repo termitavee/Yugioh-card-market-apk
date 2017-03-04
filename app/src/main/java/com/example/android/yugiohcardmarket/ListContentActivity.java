@@ -64,7 +64,9 @@ public class ListContentActivity extends AppCompatActivity implements Navigation
                  cardDetails.putExtra("name", item.getName());
                  cardDetails.putExtra("rarity", item.getRarity());
                  cardDetails.putExtra("expansion", item.getExpansion());
-                 cardDetails.putExtra("price", item.getPrice());
+                 cardDetails.putExtra("priceLow", item.getPriceLow());
+                 cardDetails.putExtra("priceTrend", item.getPriceTrend());
+                 cardDetails.putExtra("web", item.getWeb());
                  cardDetails.putExtra("menu", "true");
 
                  Log.i("setOnItemClickListener", "id=" + item.getId());

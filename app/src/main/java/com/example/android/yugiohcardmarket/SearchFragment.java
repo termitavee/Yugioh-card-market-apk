@@ -21,6 +21,7 @@ import com.example.android.yugiohcardmarket.item.Card;
 import com.example.android.yugiohcardmarket.item.CardAdapter;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -103,7 +104,9 @@ public class SearchFragment extends Fragment {
                 cardDetails.putExtra("name", currentCard.getName());
                 cardDetails.putExtra("rarity", currentCard.getRarity());
                 cardDetails.putExtra("expansion", currentCard.getExpansion());
-                cardDetails.putExtra("price", currentCard.getPrice());
+                cardDetails.putExtra("priceLow", currentCard.getPriceLow());
+                cardDetails.putExtra("priceTrend", currentCard.getPriceTrend());
+                cardDetails.putExtra("web", currentCard.getWeb());
 
                 Log.i("setOnItemClickListener", "id=" + currentCard.getId());
                 // Send the intent to launch a new activity
@@ -131,8 +134,8 @@ public class SearchFragment extends Fragment {
             loadingIndicator.setVisibility(View.GONE);
 
 
-        } catch (Exception e) {
-
+        } catch (JSONException e) {
+            Log.e("refreshList","Error parsing json "+e.getMessage());
         }
         mAdapter.addAll(cardsFound);
         mAdapter.notifyDataSetChanged();

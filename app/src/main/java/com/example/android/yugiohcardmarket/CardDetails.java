@@ -2,6 +2,8 @@ package com.example.android.yugiohcardmarket;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -26,6 +28,8 @@ import java.util.ArrayList;
 
 import static android.R.attr.id;
 import static android.widget.AbsListView.CHOICE_MODE_MULTIPLE;
+import static com.example.android.yugiohcardmarket.R.id.price_low;
+import static com.example.android.yugiohcardmarket.R.id.price_trend;
 
 /**
  * Created by termitavee on 22/01/17.
@@ -37,7 +41,9 @@ public class CardDetails extends AppCompatActivity {
     String name;
     String rarity;
     String expansion;
-    double price;
+    double priceTrend;
+    double priceLow;
+    String web;
     DBQuery database;
     ListView popUpListView;
     int[] selectedItems;
@@ -58,7 +64,9 @@ public class CardDetails extends AppCompatActivity {
         name = (String) info.get("name");
         rarity = (String) info.get("rarity");
         expansion = (String) info.get("expansion");
-        price = (double) info.get("price");
+        priceLow = (double) info.get("priceLow");
+        priceTrend = (double) info.get("priceTrend");
+        web = (String) info.get("web");
         try {
             String a = (String) info.get("menu");
             if (a.equals("true"))
@@ -87,9 +95,11 @@ public class CardDetails extends AppCompatActivity {
         TextView rarezaView = (TextView) findViewById(R.id.rareza);
         rarezaView.setText(rarity);
 
-        TextView priceView = (TextView) findViewById(R.id.price);
+        TextView priceLowView = (TextView) findViewById(price_low);
+        priceLowView.setText(String.valueOf(priceLow) + "€");
 
-        priceView.setText(String.valueOf(price) + "€");
+        TextView priceTrendView = (TextView) findViewById(price_trend);
+        priceTrendView.setText(String.valueOf(priceTrend) + "€");
 
         database = new DBQuery(getBaseContext(), this);
 
@@ -223,7 +233,7 @@ public class CardDetails extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int id) {
 
                             //Crear objeto card para meterlo en la base de datos
-                            Card card = new Card(CardId, name, image, rarity, expansion, price);
+                            Card card = new Card(CardId, name, image, rarity, expansion, priceLow, priceTrend, web);
 
                             database.open();
 
@@ -249,6 +259,11 @@ public class CardDetails extends AppCompatActivity {
         alertDialogBuilder.create().show();
     }
 
+    public void openUrl(View v){
+        Uri uri = Uri.parse("https://es.yugiohcardmarket.eu"+web);
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        startActivity(intent);
+    }
 
 
 }

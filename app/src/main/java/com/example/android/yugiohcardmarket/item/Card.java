@@ -16,28 +16,24 @@ public class Card {
     private String image;
     private String rarity;
     private String expansion;
-    private double price;
+    private double priceLow;
+    private double priceTrend;
+    private String web;
 
-    public Card() {
-        id = -1;
-        name = null;
-        image = null;
-        rarity = null;
-        expansion = null;
-        price = -1;
-    }
-
-    public Card(int cid, String cName, String cImage, String cRarity, String cExpansion, double cPrice) {
+    public Card(int cid, String cName, String cImage, String cRarity, String cExpansion, double cPriceLow, double cpriceTrend, String cweb) {
         id = cid;
         name = cName;
         image = cImage;
         rarity = cRarity;
         expansion = cExpansion;
-        price = cPrice;
+        priceLow = cPriceLow;
+        priceTrend = cpriceTrend;
+        web = cweb;
+
     }
 
-    public Card(JSONObject json)throws JSONException{
-        Log.i("Card","json="+json);
+    public Card(JSONObject json) throws JSONException {
+        Log.i("Card", "json=" + json);
         id = json.getInt("idProduct");
 
         name = json.getJSONObject("name").getJSONObject("4").getString("productName");
@@ -46,10 +42,13 @@ public class Card {
 
         rarity = json.getString("rarity");
 
-        expansion= json.getString("expansion");
+        expansion = json.getString("expansion");
 
-        price = Double.parseDouble(json.getJSONObject("priceGuide").getString("AVG"));
+        priceLow = Double.parseDouble(json.getJSONObject("priceGuide").getString("LOWEX"));
 
+        priceTrend = Double.parseDouble(json.getJSONObject("priceGuide").getString("TREND"));
+
+        web = json.getString("website");
     }
 
     public int getId() {
@@ -72,52 +71,72 @@ public class Card {
         return expansion;
     }
 
-    public double getPrice() {
-        return price;
+    public double getPriceLow() {
+        return priceLow;
+    }
+
+    public double getPriceTrend() {
+        return priceTrend;
+    }
+
+    public String getWeb() {
+        return web;
     }
 
 
 
     /*
 {
-    product: {
-        idProduct:                          // Product ID
-        idMetaproduct:                      // Metaproduct ID
-        countReprints:                      // Number of similar products bundled by the metaproduct
-        name: [                             // Name entity for each supported language
-        {
-            idLanguage:                 // Language ID
-            languageName:               // Language's name in English
-            productName:                // Product's name in given language
-        }
-        ]
-        category: {                         // Category entity the product belongs to
-            idCategory:                     // Category ID
-            categoryName:                   // Category's name
-        }
-        priceGuide: {                       // Price guide entity '''(ATTN: not returned for expansion requests)'''
-            SELL:                           // Average price of articles ever sold of this product
-            LOW:                            // Current lowest non-foil price (all conditions)
-            LOWEX+:                         // Current lowest non-foil price (condition EX and better)
-            LOWFOIL:                        // Current lowest foil price
-            AVG:                            // Current average non-foil price of all available articles of this product
-        }
-        website:                            // URL to the product (relative to MKM's base URL)
-        image:                              // Path to the product's image
-        expansion:                          // Expansion's name
-        expIcon:                            // Index of the expansion icon
-        number:                             // Number of product within the expansion (where applicable)
-        rarity:                             // Rarity of product (where applicable)
-        reprint: [                          // Reprint entities for each similar product bundled by the metaproduct
-        {
-            idProduct:                  // Product ID
-            expansion:                  // Expansion's name
-            expIcon:                    // Index of the expansion icon
-        }
-        ]
-        countArticles:                      // Number of available articles of this product
-        countFoils:                         // Number of available articles in foil of this products"
+  "idProduct": 255812,
+  "idMetaproduct": 104382,
+  "idGame": 3,
+  "countReprints": "3",
+  "name": {
+    "1": {
+      "idLanguage": 1,
+      "languageName": "English",
+      "productName": "Ultimate Ancient Gear Golem"
+    },
+    "2": {
+      "idLanguage": 2,
+      "languageName": "French",
+      "productName": "Golem Rouages Ancients Ultime"
+    },
+    "3": {
+      "idLanguage": 3,
+      "languageName": "German",
+      "productName": "Ultimativer Antiker Antriebsgolem"
+    },
+    "4": {
+      "idLanguage": 4,
+      "languageName": "Spanish",
+      "productName": "Golem de Mecanismo Antiguo Definitivo"
+    },
+    "5": {
+      "idLanguage": 5,
+      "languageName": "Italian",
+      "productName": "Golem-Ingranaggio Antico Finale"
     }
+  },
+  "website": "\\/Products\\/Singles\\/Duel+Terminal+3\\/Ultimate+Ancient+Gear+Golem",
+  "image": ".\\/img\\/items\\/5\\/DT03\\/ultimate_ancient_gear_golem.jpg",
+  "category": {
+    "idCategory": 5,
+    "categoryName": "Yugioh Single"
+  },
+  "priceGuide": {
+    "SELL": 8.95,
+    "LOW": 10.99,
+    "LOWEX": 10.99,
+    "LOWFOIL": 0,
+    "AVG": 11.47,
+    "TREND": 10.31
+  },
+  "expansion": "Duel Terminal 3",
+  "expIcon": 216,
+  "number": "033",
+  "rarity": "Common"
 }
+
 */
 }

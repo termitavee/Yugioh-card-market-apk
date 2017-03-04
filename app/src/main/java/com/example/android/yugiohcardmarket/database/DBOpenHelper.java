@@ -55,9 +55,9 @@ class ListEntry {
             + COLUMN_LIST_NAME + " TEXT NOT NULL, "
             + COLUMN_LIST_NUMBER + " INTEGER NOT NULL DEFAULT 0);";
 
-    static private String SQL_DEFAULT_TABLE = "INSERT INTO"
-            + TABLE_NAME + "(" + COLUMN_LIST_NAME + ", " + COLUMN_LIST_NAME + ")"
-            +" VALUES(default,0);";
+    static private String SQL_DEFAULT_TABLE = "INSERT INTO "
+            + TABLE_NAME + "(" + COLUMN_LIST_NAME + ", " + COLUMN_LIST_NUMBER + ")"
+            +" VALUES('default',0);";
 
     static void onCreate(SQLiteDatabase database) {
         database.execSQL(SQL_CREATE_TABLE);
@@ -83,7 +83,10 @@ class CardEntry {
 
     static final String COLUMN_CARD_EXPANSION = "expansion";
 
-    static final String COLUMN_CARD_PRICE_TREND = "price";
+    static final String COLUMN_CARD_PRICE_LOW = "priceLow";
+    static final String COLUMN_CARD_PRICE_TREND = "priceTrend";
+
+    static final String COLUMN_CARD_URL = "web";
 
 
     static private String SQL_CREATE_TABLE = "CREATE TABLE "
@@ -94,7 +97,9 @@ class CardEntry {
             + COLUMN_CARD_IMAGE_URL + " TEXT NOT NULL, "
             + COLUMN_CARD_RARITY + " TEXT NOT NULL, "
             + COLUMN_CARD_EXPANSION + " TEXT NOT NULL, "
-            + COLUMN_CARD_PRICE_TREND + " TEXT);";
+            + COLUMN_CARD_PRICE_LOW + " TEXT NOT NULL, "
+            + COLUMN_CARD_PRICE_TREND + " TEXT NOT NULL, "
+            + COLUMN_CARD_URL + " TEXT NOT NULL);";
 
 
     static void onCreate(SQLiteDatabase database) {

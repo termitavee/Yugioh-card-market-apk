@@ -13,6 +13,7 @@ import com.example.android.yugiohcardmarket.R;
 
 import java.util.List;
 
+
 /**
  * Created by termitavee on 20/02/17.
  */
@@ -35,10 +36,8 @@ public class CardAdapter extends ArrayAdapter<Card> {
         TextView idView = (TextView) listItemView.findViewById(R.id.cardID);
         String id = String.valueOf(currentCard.getId());
         idView.setText(id);
-//TODO arreglar
         ImageView imageView = (ImageView) listItemView.findViewById(R.id.image);
-        //String image = currentCard.getImage();
-        //new ImageGetter(imageView).execute(image);
+
 
         Drawable drawable = getContext().getResources().getDrawable(R.drawable.undefined_card);
         imageView.setBackground(drawable);
@@ -55,9 +54,11 @@ public class CardAdapter extends ArrayAdapter<Card> {
         String rareza = currentCard.getRarity();
         rarezaView.setText(rareza);
 
-        TextView priceView = (TextView) listItemView.findViewById(R.id.price);
-        double price = currentCard.getPrice();
-        priceView.setText(String.valueOf(price));
+        TextView priceLowView = (TextView) listItemView.findViewById(R.id.price);
+        String priceLow = String.valueOf(currentCard.getPriceLow())+"€";
+        priceLowView.setText(priceLow);
+
+
 
         return listItemView;
     }

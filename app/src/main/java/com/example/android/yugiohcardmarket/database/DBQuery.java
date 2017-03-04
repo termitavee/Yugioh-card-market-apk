@@ -65,7 +65,9 @@ public class DBQuery extends AsyncTask<String, Void, Boolean> {
         values.put(CardEntry.COLUMN_CARD_IMAGE_URL, card.getImage());
         values.put(CardEntry.COLUMN_CARD_RARITY, card.getRarity());
         values.put(CardEntry.COLUMN_CARD_EXPANSION, card.getExpansion());
-        values.put(CardEntry.COLUMN_CARD_PRICE_TREND, card.getPrice());
+        values.put(CardEntry.COLUMN_CARD_PRICE_LOW, card.getPriceLow());
+        values.put(CardEntry.COLUMN_CARD_PRICE_TREND, card.getPriceTrend());
+        values.put(CardEntry.COLUMN_CARD_URL, card.getWeb());
 
         database.insert(CardEntry.TABLE_NAME, null, values);
 
@@ -174,7 +176,9 @@ public class DBQuery extends AsyncTask<String, Void, Boolean> {
                     CardEntry.TABLE_NAME + "." + CardEntry.COLUMN_CARD_IMAGE_URL + ", " +
                     CardEntry.TABLE_NAME + "." + CardEntry.COLUMN_CARD_RARITY + ", " +
                     CardEntry.TABLE_NAME + "." + CardEntry.COLUMN_CARD_EXPANSION + ", " +
-                    CardEntry.TABLE_NAME + "." + CardEntry.COLUMN_CARD_PRICE_TREND +
+                    CardEntry.TABLE_NAME + "." + CardEntry.COLUMN_CARD_PRICE_LOW +", " +
+                    CardEntry.TABLE_NAME + "." + CardEntry.COLUMN_CARD_PRICE_TREND +", " +
+                    CardEntry.TABLE_NAME + "." + CardEntry.COLUMN_CARD_URL +
                     " FROM " + CardEntry.TABLE_NAME +
                     " INNER JOIN " + RelationEntry.TABLE_NAME + " ON " + CardEntry.TABLE_NAME + "." + CardEntry.COLUMN_CARD_ID + " = " + RelationEntry.TABLE_NAME + "." + RelationEntry.COLUMN_CARD_ID +
                     " INNER JOIN " + ListEntry.TABLE_NAME + " ON " + ListEntry.TABLE_NAME + "." + ListEntry._ID + " = " + RelationEntry.TABLE_NAME + "." + RelationEntry.COLUMN_LIST_ID +
@@ -184,13 +188,15 @@ public class DBQuery extends AsyncTask<String, Void, Boolean> {
 
             if (cursor != null) {
                 cursor.moveToFirst();
-                Log.i("getAllCards", "cursor.getCount" + cursor.getCount());
+                Log.i("getAllCards", "cursor.getCount=" + cursor.getCount());
                 int id;
                 String name;
                 String image;
                 String rarity;
                 String expansion;
-                double price;
+                double priceLow;
+                double priceTrend;
+                String web;
                 for (int i = 0; i < cursor.getCount(); i++) {
 
                     //get data from cursor and manage it
@@ -199,9 +205,11 @@ public class DBQuery extends AsyncTask<String, Void, Boolean> {
                     image = cursor.getString(cursor.getColumnIndex(CardEntry.COLUMN_CARD_IMAGE_URL));
                     rarity = cursor.getString(cursor.getColumnIndex(CardEntry.COLUMN_CARD_RARITY));
                     expansion = cursor.getString(cursor.getColumnIndex(CardEntry.COLUMN_CARD_EXPANSION));
-                    price = cursor.getDouble(cursor.getColumnIndex(CardEntry.COLUMN_CARD_PRICE_TREND));
+                    priceLow = cursor.getDouble(cursor.getColumnIndex(CardEntry.COLUMN_CARD_PRICE_LOW));
+                    priceTrend = cursor.getDouble(cursor.getColumnIndex(CardEntry.COLUMN_CARD_PRICE_TREND));
+                    web = cursor.getString(cursor.getColumnIndex(CardEntry.COLUMN_CARD_URL));
 
-                    lists.add(new Card(id, name, image, rarity, expansion, price));
+                    lists.add(new Card(id, name, image, rarity, expansion, priceLow, priceTrend,web));
                     cursor.moveToNext();
                 }
             }
