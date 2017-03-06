@@ -40,13 +40,12 @@ public class APIQuery {
         mbuscar = buscar;
     }
 
-    //TODO utilities for the class
+    //utilities for the class
 
     public void prepareUrl(String stringUrl) {
 
         String dfUrl = "https://www.mkmapi.eu/ws/v1.1/output.json";
         try {
-            //TODO comprobar
             if (mbuscar)
                 apiURL = dfUrl + "/products/" + rawurlencode(stringUrl) + "/3/4/false";
             else
@@ -81,7 +80,7 @@ public class APIQuery {
 
             baseString = baseString + rawurlencode(paramString);
 
-            //TODO encripta
+            //encripta
             String signingKey = rawurlencode(APIData.appSecret) +
                     "&" + rawurlencode(APIData.accessTokenSecret);
             Mac mac = Mac.getInstance("HmacSHA1");
@@ -101,7 +100,6 @@ public class APIQuery {
                     "oauth_signature_method=\"" + oauth_signature_method + "\", " +
                     "oauth_signature=\"" + oauth_signature + "\"";
 
-            //TODO hacer peticion
             return authorizationProperty;
 
 

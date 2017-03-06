@@ -193,7 +193,7 @@ public class SearchFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public Loader<List<Card>> onCreateLoader(int id, Bundle args) {
-        //TODO aqui se crea
+        // aqui se crea
         loader = new SearchLoader(getContext(), args, this);
         loader.onContentChanged();
         return loader;
@@ -201,7 +201,7 @@ public class SearchFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public void onLoadFinished(Loader<List<Card>> loader, List<Card> data) {
-        //TODO put data
+
         cardsFound = data;
         mAdapter.addAll(cardsFound);
         mAdapter.notifyDataSetChanged();

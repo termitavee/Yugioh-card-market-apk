@@ -18,7 +18,7 @@ import java.util.List;
  * Created by termitavee on 03/03/17.
  */
 
-public class SearchLoader extends AsyncTaskLoader<List<Card>>{
+public class SearchLoader extends AsyncTaskLoader<List<Card>> {
     protected List<Card> mLastDataList = null;
     private String text;
     private APIQuery asyncSearch;
@@ -27,31 +27,28 @@ public class SearchLoader extends AsyncTaskLoader<List<Card>>{
 
     public SearchLoader(Context context, Bundle bundle, SearchFragment parent) {
         super(context);
-        if(bundle!=null)
-        this.text=bundle.getString("texto","");
+        if (bundle != null)
+            this.text = bundle.getString("texto", "");
         else
-            this.text="";
-        this.parent=parent;
+            this.text = "";
+        this.parent = parent;
         this.context = context;
     }
 
     @Override
     public List<Card> loadInBackground() {
         JSONObject json;
-        Log.i("SearchLoader","loadInBackground, text="+text);
-        //TODO creo que aquí llama a la api
+        Log.i("SearchLoader", "loadInBackground, text=" + text);
 
         if (!text.equals("")) {
             asyncSearch = new APIQuery(context, asyncSearch.BUSCAR);
             //parent.showLoading();
-            json= asyncSearch.doInBackground(text);
+            json = asyncSearch.doInBackground(text);
 
-        }
-        else
+        } else
             json = new JSONObject();
         return jsonToList(json);
     }
-
 
 
     @Override
@@ -85,14 +82,16 @@ public class SearchLoader extends AsyncTaskLoader<List<Card>>{
             JSONArray cardsArray = json.getJSONArray("product");
             for (int i = 0; i < cardsArray.length(); i++) {
                 try {
-                cardsFound.add(new Card(cardsArray.getJSONObject(i)));
-                }catch(Exception e){}
+                    cardsFound.add(new Card(cardsArray.getJSONObject(i)));
+                } catch (Exception e) {
+                }
             }
-        }catch(Exception e){}
+        } catch (Exception e) {
+        }
 
-        Log.i("SearchLoader","loadInBackground, finished");
+        Log.i("SearchLoader", "loadInBackground, finished");
 
-        Log.i("SearchLoader","loadInBackground, found "+cardsFound.size()+" Cards");
+        Log.i("SearchLoader", "loadInBackground, found " + cardsFound.size() + " Cards");
         return cardsFound;
     }
 

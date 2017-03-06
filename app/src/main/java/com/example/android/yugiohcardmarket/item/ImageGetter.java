@@ -47,7 +47,6 @@ public class ImageGetter extends AsyncTask<String, Integer, Bitmap> {
     @Override
     protected void onPostExecute(Bitmap b) {
         super.onPostExecute(b);
-        //TODO comprobar
         parent.setImageBitmap(null);
         parent.setBackground(null);
         //parent.setImageResource(android.R.color.transparent);

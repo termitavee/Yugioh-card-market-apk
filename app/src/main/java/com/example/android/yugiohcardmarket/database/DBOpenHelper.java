@@ -9,7 +9,6 @@ import android.util.Log;
 /**
  * Created by termitavee on 24/01/17.
  */
-//TODO crea la base de datos MySQLiteHelper
 public class DBOpenHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "ygo.db";
     private static final int DATABASE_VERSION = 1;

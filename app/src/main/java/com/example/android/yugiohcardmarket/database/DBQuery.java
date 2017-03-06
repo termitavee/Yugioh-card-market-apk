@@ -17,7 +17,6 @@ import java.util.ArrayList;
 /**
  * Created by termitavee on 15/01/17.
  */
-//TODO usar el content provider para meter y sacar los datos necesarios CommentsDataSource
 public class DBQuery extends AsyncTask<String, Void, Boolean> {
     private DBOpenHelper DbHelper;
     SQLiteDatabase database;
@@ -27,7 +26,6 @@ public class DBQuery extends AsyncTask<String, Void, Boolean> {
     private final String INSERT = "1";
     private final String DELETE = "2";
     static boolean success;
-    //TODO variables para que las lea asyntask
 
     public DBQuery(Context context, Activity activity) {
         DbHelper = new DBOpenHelper(context);
@@ -135,7 +133,6 @@ public class DBQuery extends AsyncTask<String, Void, Boolean> {
     }
 
     public ArrayList<CardList> getAllLists() {
-        //TODO modify, count dards in each list
         Log.i("DBQuery", "getAllLists ");
         open();
 
