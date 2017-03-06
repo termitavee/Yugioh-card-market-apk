@@ -36,7 +36,8 @@ import static com.example.android.yugiohcardmarket.R.id.price_trend;
  */
 
 public class CardActivity extends AppCompatActivity {
-    int CardId;
+    int listId;
+    int cardId;
     String image;
     String name;
     String rarity;
@@ -58,8 +59,13 @@ public class CardActivity extends AppCompatActivity {
         setContentView(R.layout.activity_card);
 
         Bundle info = getIntent().getExtras();
+        try {
+            listId = (int) info.get("listID");
+        } catch (Exception e) {
+            listId = -1;
+        }
 
-        CardId = (int) info.get("cardID");
+        cardId = (int) info.get("cardID");
         image = (String) info.get("img");
         name = (String) info.get("name");
         rarity = (String) info.get("rarity");
@@ -106,21 +112,17 @@ public class CardActivity extends AppCompatActivity {
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         if (cardFromList) {
 
-            //setBackground(Drawable);
             fab.setImageResource(R.drawable.ic_remove);
-
-            //fab.setBackground(getResources().getDrawable(R.drawable.ic_remove,null));
-            //fab.hide();
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
 
                     View popup = LayoutInflater.from(getBaseContext()).inflate(R.layout.remove_card_popup, null);
+
                     launchPopup(popup);
                 }
             });
         } else {
-            //fab.setBackground(ResourcesCompat.getDrawable(getResources(),R.drawable.ic_add,null));
             fab.setImageResource(R.drawable.ic_add);
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -156,8 +158,6 @@ public class CardActivity extends AppCompatActivity {
                             for (int i = 0; i < selectedItems.length; i++) {
                                 a += selectedItems[i] + ",";
                             }
-
-                            //selectedItems[position] = 1;
 
                         }
                     });
@@ -210,11 +210,12 @@ public class CardActivity extends AppCompatActivity {
 
                             database.open();
 
-                            if (database.deleteCard(CardId) == 0)
+                            if (database.deleteCard(cardId, listId) == 0)
                                 Toast.makeText(getApplicationContext(), "Ha ocurrido un error", Toast.LENGTH_SHORT).show();
-                            else
+                            else {
                                 Toast.makeText(getApplicationContext(), "Carta eliminada :(", Toast.LENGTH_SHORT).show();
-
+                                finish();
+                            }
 
                             database.close();
 
@@ -232,7 +233,7 @@ public class CardActivity extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int id) {
 
                             //Crear objeto card para meterlo en la base de datos
-                            Card card = new Card(CardId, name, image, rarity, expansion, priceLow, priceTrend, web);
+                            Card card = new Card(cardId, name, image, rarity, expansion, priceLow, priceTrend, web);
 
                             database.open();
 
@@ -258,8 +259,8 @@ public class CardActivity extends AppCompatActivity {
         alertDialogBuilder.create().show();
     }
 
-    public void openUrl(View v){
-        Uri uri = Uri.parse("https://es.yugiohcardmarket.eu"+web);
+    public void openUrl(View v) {
+        Uri uri = Uri.parse("https://es.yugiohcardmarket.eu" + web);
         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
         startActivity(intent);
     }

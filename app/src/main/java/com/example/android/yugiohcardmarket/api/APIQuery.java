@@ -1,7 +1,6 @@
 package com.example.android.yugiohcardmarket.api;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.util.Base64;
 import android.util.Log;
 
@@ -22,10 +21,10 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.net.ssl.HttpsURLConnection;
 
 /**
- * Created by termitavee on 15/01/17.
+ * Created by termitavee on 06/03/17.
  */
 
-public class APIQuery extends AsyncTask<String, Void, JSONObject> {
+public class APIQuery {
 
     private String apiURL;
     private JSONObject mData;
@@ -132,8 +131,7 @@ public class APIQuery extends AsyncTask<String, Void, JSONObject> {
         return URLEncoder.encode(str, "UTF-8");
     }
 
-
-    protected JSONObject doInBackground(String... urls) {
+    public JSONObject doInBackground(String... urls) {
         // Don't perform the request if there are no URLs, or the first URL is null.
 
         if (mbuscar) {
@@ -184,18 +182,6 @@ public class APIQuery extends AsyncTask<String, Void, JSONObject> {
             ex.printStackTrace();
         }
         return response;
-    }
-
-    @Override
-    protected void onPostExecute(JSONObject data) {
-        // Clear the adapter of previous earthquake data
-        //mAdapter.clear();
-       /* if (data != null)
-            mData = data;
-        else
-            mData = null;*/
-        mData = (data != null) ? data : null;
-        //mParent.refreshList(mData);
     }
 
 }

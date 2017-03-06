@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
-import com.example.android.yugiohcardmarket.api.APIQuery2;
+import com.example.android.yugiohcardmarket.api.APIQuery;
 import com.example.android.yugiohcardmarket.item.Card;
 
 import org.json.JSONArray;
@@ -21,7 +21,7 @@ import java.util.List;
 public class SearchLoader extends AsyncTaskLoader<List<Card>>{
     protected List<Card> mLastDataList = null;
     private String text;
-    private APIQuery2 asyncSearch;
+    private APIQuery asyncSearch;
     private Context context;
     private SearchFragment parent;
 
@@ -42,7 +42,7 @@ public class SearchLoader extends AsyncTaskLoader<List<Card>>{
         //TODO creo que aquí llama a la api
 
         if (!text.equals("")) {
-            asyncSearch = new APIQuery2(context, asyncSearch.BUSCAR);
+            asyncSearch = new APIQuery(context, asyncSearch.BUSCAR);
             //parent.showLoading();
             json= asyncSearch.doInBackground(text);
 

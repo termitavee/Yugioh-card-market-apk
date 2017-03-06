@@ -122,14 +122,14 @@ public class DBQuery extends AsyncTask<String, Void, Boolean> {
         return i;
     }
 
-    public int deleteCard(int id) {
+    public int deleteCard(int cardid, int listid) {
         open();
-        String[] param = {id + ""};
-        //TODO delete card from a list
+        String[] param = {cardid + "", listid + ""};
+
 
         //int i = database.delete(CardEntry.TABLE_NAME, CardEntry._ID + "=?", param);
         //TODO delete it from relation
-        int i = database.delete(RelationEntry.TABLE_NAME, RelationEntry.COLUMN_CARD_ID + "=?", param);
+        int i = database.delete(RelationEntry.TABLE_NAME, RelationEntry.COLUMN_CARD_ID + "=? AND " + RelationEntry.COLUMN_LIST_ID + "=?", param);
 
         return i;
     }
@@ -176,8 +176,8 @@ public class DBQuery extends AsyncTask<String, Void, Boolean> {
                     CardEntry.TABLE_NAME + "." + CardEntry.COLUMN_CARD_IMAGE_URL + ", " +
                     CardEntry.TABLE_NAME + "." + CardEntry.COLUMN_CARD_RARITY + ", " +
                     CardEntry.TABLE_NAME + "." + CardEntry.COLUMN_CARD_EXPANSION + ", " +
-                    CardEntry.TABLE_NAME + "." + CardEntry.COLUMN_CARD_PRICE_LOW +", " +
-                    CardEntry.TABLE_NAME + "." + CardEntry.COLUMN_CARD_PRICE_TREND +", " +
+                    CardEntry.TABLE_NAME + "." + CardEntry.COLUMN_CARD_PRICE_LOW + ", " +
+                    CardEntry.TABLE_NAME + "." + CardEntry.COLUMN_CARD_PRICE_TREND + ", " +
                     CardEntry.TABLE_NAME + "." + CardEntry.COLUMN_CARD_URL +
                     " FROM " + CardEntry.TABLE_NAME +
                     " INNER JOIN " + RelationEntry.TABLE_NAME + " ON " + CardEntry.TABLE_NAME + "." + CardEntry.COLUMN_CARD_ID + " = " + RelationEntry.TABLE_NAME + "." + RelationEntry.COLUMN_CARD_ID +
@@ -209,7 +209,7 @@ public class DBQuery extends AsyncTask<String, Void, Boolean> {
                     priceTrend = cursor.getDouble(cursor.getColumnIndex(CardEntry.COLUMN_CARD_PRICE_TREND));
                     web = cursor.getString(cursor.getColumnIndex(CardEntry.COLUMN_CARD_URL));
 
-                    lists.add(new Card(id, name, image, rarity, expansion, priceLow, priceTrend,web));
+                    lists.add(new Card(id, name, image, rarity, expansion, priceLow, priceTrend, web));
                     cursor.moveToNext();
                 }
             }

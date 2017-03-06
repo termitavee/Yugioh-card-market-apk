@@ -59,6 +59,7 @@ public class ListContentActivity extends AppCompatActivity implements Navigation
 
                  Intent cardDetails = new Intent(ListContentActivity.this, CardActivity.class);
 
+                 cardDetails.putExtra("listID", listID);
                  cardDetails.putExtra("cardID", item.getId());
                  cardDetails.putExtra("img", item.getImage());
                  cardDetails.putExtra("name", item.getName());
