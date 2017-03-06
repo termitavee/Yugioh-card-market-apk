@@ -118,6 +118,7 @@ public class ListsFragment extends Fragment {
     public void onResume() {
         super.onResume();
         madapter.notifyDataSetChanged();
+        //getActivity().getWindow().getDecorView().findViewById(android.R.id.list).invalidate();
         //madapter.notifyDataSetInvalidated();
         //mlistView.setAdapter(madapter);
     }

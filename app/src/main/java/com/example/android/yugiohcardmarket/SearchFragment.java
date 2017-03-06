@@ -3,12 +3,13 @@ package com.example.android.yugiohcardmarket;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,7 +17,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.android.yugiohcardmarket.api.APIQuery;
 import com.example.android.yugiohcardmarket.item.Card;
 import com.example.android.yugiohcardmarket.item.CardAdapter;
 
@@ -32,7 +32,7 @@ import java.util.List;
  * Created by termitavee on 16/01/17.
  */
 
-public class SearchFragment extends Fragment {
+public class SearchFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Card>> {
 
 
     private List<Card> cardsFound;
@@ -40,8 +40,9 @@ public class SearchFragment extends Fragment {
     private EditText searchField;
     private CardAdapter mAdapter;
     private TextView mEmptyStateTextView;
+    private Loader loader;
     ListView cardsListView;
-    APIQuery asyncSearch;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -82,6 +83,8 @@ public class SearchFragment extends Fragment {
                     return true;
                 }
                 return false;
+
+
             }
         });
         cardsListView = (ListView) getActivity().findViewById(R.id.search_list);
@@ -97,7 +100,7 @@ public class SearchFragment extends Fragment {
                 Card currentCard = cardsFound.get(position);
 
                 // Create a new intent to view the earthquake URI
-                Intent cardDetails = new Intent(getActivity(), CardDetails.class);
+                Intent cardDetails = new Intent(getActivity(), CardActivity.class);
 
                 cardDetails.putExtra("cardID", currentCard.getId());
                 cardDetails.putExtra("img", currentCard.getImage());
@@ -111,10 +114,12 @@ public class SearchFragment extends Fragment {
                 Log.i("setOnItemClickListener", "id=" + currentCard.getId());
                 // Send the intent to launch a new activity
                 mAdapter.clear();
+                loader.stopLoading();
                 startActivity(cardDetails);
 
             }
         });
+        getLoaderManager().initLoader(1, null, this);
     }
 
     public void refreshList(JSONObject mData) {
@@ -135,7 +140,7 @@ public class SearchFragment extends Fragment {
 
 
         } catch (JSONException e) {
-            Log.e("refreshList","Error parsing json "+e.getMessage());
+            Log.e("refreshList", "Error parsing json " + e.getMessage());
         }
         mAdapter.addAll(cardsFound);
         mAdapter.notifyDataSetChanged();
@@ -144,20 +149,29 @@ public class SearchFragment extends Fragment {
         Log.i("refreshList", "cardsFound.size()=" + cardsFound.size());
         hideLoading();
 
-
     }
 
 
     public void searchAction() {
-        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         String text = searchField.getText().toString();
         Log.i("searchAction", "texto \"" + text + "\"");
+
+        Bundle bundle = new Bundle();
+        bundle.putString("texto", text);
+        loader = getLoaderManager().restartLoader(1, bundle, this);
+        loader.forceLoad();
+
+
+        /*
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
         if (!text.equals("")) {
             asyncSearch = new APIQuery(this, asyncSearch.BUSCAR);
             showLoading();
             asyncSearch.execute(text);
         }
 
+*/
     }
 
     public void hideLoading() {
@@ -175,5 +189,30 @@ public class SearchFragment extends Fragment {
         super.onResume();
         if (cardsFound.size() > 0)
             mAdapter.addAll(cardsFound);
+    }
+
+    @Override
+    public Loader<List<Card>> onCreateLoader(int id, Bundle args) {
+        //TODO aqui se crea
+        loader = new SearchLoader(getContext(), args, this);
+        loader.onContentChanged();
+        return loader;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<List<Card>> loader, List<Card> data) {
+        //TODO put data
+        cardsFound = data;
+        mAdapter.addAll(cardsFound);
+        mAdapter.notifyDataSetChanged();
+        if (mAdapter.isEmpty())
+            Toast.makeText(getActivity(), "No se ha encontrado nada", Toast.LENGTH_SHORT).show();
+
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<List<Card>> loader) {
+        mAdapter.clear();
     }
 }

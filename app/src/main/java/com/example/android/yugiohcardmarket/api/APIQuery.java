@@ -1,10 +1,9 @@
 package com.example.android.yugiohcardmarket.api;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Base64;
 import android.util.Log;
-
-import com.example.android.yugiohcardmarket.SearchFragment;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,13 +29,13 @@ public class APIQuery extends AsyncTask<String, Void, JSONObject> {
 
     private String apiURL;
     private JSONObject mData;
-    private SearchFragment mParent;
+    private Context mParent;
     private boolean mbuscar;
 
     public static boolean BUSCAR = true;
     public static boolean MIRAR = false;
 
-    public APIQuery(SearchFragment parent, boolean buscar) {
+    public APIQuery(Context parent, boolean buscar) {
         mData = new JSONObject();
         mParent = parent;
         mbuscar = buscar;
@@ -196,7 +195,7 @@ public class APIQuery extends AsyncTask<String, Void, JSONObject> {
         else
             mData = null;*/
         mData = (data != null) ? data : null;
-        mParent.refreshList(mData);
+        //mParent.refreshList(mData);
     }
 
 }

@@ -35,7 +35,7 @@ import static com.example.android.yugiohcardmarket.R.id.price_trend;
  * Created by termitavee on 22/01/17.
  */
 
-public class CardDetails extends AppCompatActivity {
+public class CardActivity extends AppCompatActivity {
     int CardId;
     String image;
     String name;
@@ -55,7 +55,7 @@ public class CardDetails extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.card_details);
+        setContentView(R.layout.activity_card);
 
         Bundle info = getIntent().getExtras();
 
@@ -105,7 +105,6 @@ public class CardDetails extends AppCompatActivity {
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         if (cardFromList) {
-            //TODO change icon to ic_remove and add listener
 
             //setBackground(Drawable);
             fab.setImageResource(R.drawable.ic_remove);
@@ -189,7 +188,7 @@ public class CardDetails extends AppCompatActivity {
 
         switch (item.getItemId()) {
             case R.id.action_del:
-                //TODO borrar la carta de esta lsita
+                //borrar la carta de esta lsita
                 break;
             case R.id.action_add:
                 View popup = LayoutInflater.from(getBaseContext()).inflate(R.layout.add_card_popup, null);
@@ -200,7 +199,7 @@ public class CardDetails extends AppCompatActivity {
     }
 
     private void launchPopup(View popup) {
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(CardDetails.this);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(CardActivity.this);
         alertDialogBuilder.setView(popup);
 
         if (cardFromList) {

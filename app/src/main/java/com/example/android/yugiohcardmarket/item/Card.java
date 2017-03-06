@@ -1,7 +1,5 @@
 package com.example.android.yugiohcardmarket.item;
 
-import android.util.Log;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -33,7 +31,7 @@ public class Card {
     }
 
     public Card(JSONObject json) throws JSONException {
-        Log.i("Card", "json=" + json);
+        //Log.i("Card", "json=" + json);
         id = json.getInt("idProduct");
 
         name = json.getJSONObject("name").getJSONObject("4").getString("productName");
