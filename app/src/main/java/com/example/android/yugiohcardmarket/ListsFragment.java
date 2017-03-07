@@ -112,15 +112,14 @@ public class ListsFragment extends Fragment {
         madapter.notifyDataSetChanged();
 
     }
-
-
     @Override
-    public void onResume() {
+    public void onResume(){
         super.onResume();
+        ArrayList lists = database.getAllLists();
+        madapter.clear();
+        madapter.addAll(lists);
         madapter.notifyDataSetChanged();
-        //getActivity().getWindow().getDecorView().findViewById(android.R.id.list).invalidate();
-        //madapter.notifyDataSetInvalidated();
-        //mlistView.setAdapter(madapter);
     }
+
 
 }

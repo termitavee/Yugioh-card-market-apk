@@ -42,11 +42,12 @@ public class SearchLoader extends AsyncTaskLoader<List<Card>> {
 
         if (!text.equals("")) {
             asyncSearch = new APIQuery(context, asyncSearch.BUSCAR);
-            //parent.showLoading();
+
             json = asyncSearch.doInBackground(text);
 
         } else
             json = new JSONObject();
+
         return jsonToList(json);
     }
 
@@ -75,6 +76,8 @@ public class SearchLoader extends AsyncTaskLoader<List<Card>> {
         mLastDataList = null;
 
     }
+
+
 
     private List<Card> jsonToList(JSONObject json) {
         List<Card> cardsFound = new ArrayList<>();

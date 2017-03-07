@@ -75,7 +75,8 @@ public class ListContentActivity extends AppCompatActivity implements Navigation
 
                 Log.i("setOnItemClickListener", "id=" + item.getId());
                 // Send the intent to launch a new activity
-                startActivity(cardDetails);
+                //startActivity(cardDetails);
+                startActivityForResult(cardDetails,0);
 
             }
         });
@@ -110,11 +111,14 @@ public class ListContentActivity extends AppCompatActivity implements Navigation
         });
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-    }
+   /* @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
 
+        if (requestCode == 0) {
+            doRefresh(); // your "refresh" code
+        }
+    }*/
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -126,6 +130,13 @@ public class ListContentActivity extends AppCompatActivity implements Navigation
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+    @Override
+    public void onResume(){
+        super.onResume();
+        ArrayList lists = database.getAllCards(listID);
+        madapter.clear();
+        madapter.addAll(lists);
     }
 
 }

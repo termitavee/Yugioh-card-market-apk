@@ -155,23 +155,14 @@ public class SearchFragment extends Fragment implements LoaderManager.LoaderCall
     public void searchAction() {
         String text = searchField.getText().toString();
         Log.i("searchAction", "texto \"" + text + "\"");
-
+        showLoading();
         Bundle bundle = new Bundle();
         bundle.putString("texto", text);
         loader = getLoaderManager().restartLoader(1, bundle, this);
         loader.forceLoad();
+        mAdapter.notifyDataSetInvalidated();
 
 
-        /*
-        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
-        if (!text.equals("")) {
-            asyncSearch = new APIQuery(this, asyncSearch.BUSCAR);
-            showLoading();
-            asyncSearch.execute(text);
-        }
-
-*/
     }
 
     public void hideLoading() {
@@ -182,6 +173,7 @@ public class SearchFragment extends Fragment implements LoaderManager.LoaderCall
     public void showLoading() {
         //loadingIndicator.setVisibility(View.GONE);
         getView().findViewById(R.id.loading_indicator).setVisibility(View.VISIBLE);
+
     }
 
     @Override
@@ -201,8 +193,9 @@ public class SearchFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public void onLoadFinished(Loader<List<Card>> loader, List<Card> data) {
-
+        hideLoading();
         cardsFound = data;
+        mAdapter.clear();
         mAdapter.addAll(cardsFound);
         mAdapter.notifyDataSetChanged();
         if (mAdapter.isEmpty())
